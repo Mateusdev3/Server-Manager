@@ -65,11 +65,11 @@
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="420" Height="50" Margin="0,430,0,0" Orientation="Horizontal">
 
-            <CheckBox x:Name="ch1" Content="Batlleye" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" Margin="10"/>
-            <CheckBox x:Name="ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10"/>
-            <CheckBox x:Name="ch3" Content="Logs" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
-            <CheckBox x:Name="ch4" Content="Whitelist" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="70" Margin="10"/>
-            <CheckBox x:Name="ch5" Content="TestServer" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
+            <CheckBox x:Name="Ch1" Content="Batlleye" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" Margin="10"/>
+            <CheckBox x:Name="Ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10" Checked="Ch2_Checked"/>
+            <CheckBox x:Name="Ch3" Content="Logs" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
+            <CheckBox x:Name="Ch4" Content="Whitelist" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="70" Margin="10"/>
+            <CheckBox x:Name="Ch5" Content="TestServer" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
 
         </StackPanel>
 

@@ -16,7 +16,10 @@ namespace Server_Manager {
 
         //Variaveis globais
 
+        string diretoriomain = AppDomain.CurrentDomain.BaseDirectory;
         string dayzexename = "DayZServer_x64.exe";
+        string dayzcfgname = "serverDZ.cfg";
+        string mods = "";
         
 
         public MainWindow() {
@@ -42,26 +45,29 @@ namespace Server_Manager {
             this.WindowState = WindowState.Minimized;
         }
 
-
-
         //Botões principais
 
         private void Iniciar(object sender, RoutedEventArgs e) {
             if (File.Exists(dayzexename)){
+                if (Ch2.IsChecked == true){
+                  
+                    var pastas = Directory.GetDirectories(diretoriomain).Select(System.IO.Path.GetFileName).Where(nome => nome.StartsWith("@")).ToArray();
+                    mods = string.Join(";", pastas);
+                    MessageBox.Show(mods);
 
+                }
 
-                
-            
+                else { MessageBox.Show("Iniciando sem mods"); }
+
             }
             else
             {
                 MessageBox.Show(".exe do servidor não encontrado...");
             }
             
+        }
 
-
-
-
+        private void Ch2_Checked(object sender, RoutedEventArgs e) {
 
         }
     }
