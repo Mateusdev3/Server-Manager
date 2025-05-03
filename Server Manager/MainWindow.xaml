@@ -8,7 +8,7 @@
         
         WindowStyle="None"
         Title="Madara_Manager" Height="505" Width="900">
-    <Grid>
+    <Grid MouseDown="Mouse">
 
         <!-- Imagem de fundo  -->
 
@@ -45,12 +45,16 @@
             </StackPanel>
         </Button>
 
+        <!-- Botões minimizar e fechar -->
+        <Button Content="x" Width="50" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,18,10,0" Background="Black" Foreground="White" Click="Fechar_Janela"/>
+        <Button Content="-" Width="50" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,18,79,0" Background="Black" Foreground="White" Click="Minimizar_Janela"/>
+
 
         <!-- Botões Iniciar e Fechar -->
 
         <Button Content="Iniciar" FontSize="20" FontStyle="Oblique"
         RenderTransformOrigin="0.842,1.668" Margin="696,423,24,18" Background="Black"
-        Foreground="White" BorderBrush="White" BorderThickness="2" FontWeight="Bold"/>
+        Foreground="White" BorderBrush="White" BorderThickness="2" FontWeight="Bold" Click="Iniciar"/>
 
         <Button Content="Fechar" FontSize="20" FontWeight="Bold" FontStyle="Oblique" Background="Black"
         Foreground="White" BorderBrush="White" BorderThickness="2" Margin="24,423,696,18"/>
@@ -60,13 +64,13 @@
         <!-- Checkbox -->
 
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="420" Height="50" Margin="0,430,0,0" Orientation="Horizontal">
-            
+
             <CheckBox x:Name="ch1" Content="Batlleye" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" Margin="10"/>
             <CheckBox x:Name="ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10"/>
             <CheckBox x:Name="ch3" Content="Logs" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
             <CheckBox x:Name="ch4" Content="Whitelist" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="70" Margin="10"/>
             <CheckBox x:Name="ch5" Content="TestServer" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
-            
+
         </StackPanel>
 
 
