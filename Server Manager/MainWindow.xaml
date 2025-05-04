@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Server_Manager"
         mc:Ignorable="d"
-        
+        ResizeMode="NoResize"
         WindowStyle="None"
         Title="Madara_Manager" Height="505" Width="900">
     <Grid MouseDown="Mouse">
@@ -57,7 +57,7 @@
         Foreground="White" BorderBrush="White" BorderThickness="2" FontWeight="Bold" Click="Iniciar"/>
 
         <Button Content="Fechar" FontSize="20" FontWeight="Bold" FontStyle="Oblique" Background="Black"
-        Foreground="White" BorderBrush="White" BorderThickness="2" Margin="24,423,696,18"/>
+        Foreground="White" BorderBrush="White" BorderThickness="2" Margin="24,423,696,18" Click="Fechar"/>
 
         <Border Width="900" Height="100" VerticalAlignment="Top" Background="Black" Opacity="0.5" Panel.ZIndex= "-1" Margin="0,395,0,0"/>
 
@@ -66,10 +66,10 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Width="420" Height="50" Margin="0,430,0,0" Orientation="Horizontal">
 
             <CheckBox x:Name="Ch1" Content="Batlleye" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" Margin="10"/>
-            <CheckBox x:Name="Ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10" Checked="Ch2_Checked"/>
+            <CheckBox x:Name="Ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10" />
             <CheckBox x:Name="Ch3" Content="Logs" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
             <CheckBox x:Name="Ch4" Content="Whitelist" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="70" Margin="10"/>
-            <CheckBox x:Name="Ch5" Content="TestServer" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
+            <CheckBox x:Name="Ch5" Content="Recrash" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
 
         </StackPanel>
 
