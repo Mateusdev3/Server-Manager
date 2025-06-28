@@ -1,0 +1,12 @@
+{
+    "Diretoriomain": "D:\\Server Teste Pirata",
+    "Dayzexename": "DayZServer_x64.exe",
+    "Dayzcfgname": "serverDZ.cfg",
+    "Becname": "Bec.exe",
+    "Processbec": "Bec",
+    "Becpath": "D:\\Server Teste Pirata\\BEC",
+    "Nomedayzprocess": "DayZServer_x64",
+    "Port": "2302",
+    "whitelistpath": "whitelist.txt",
+    "configdayzpath": "serverDZ.cfg"
+}

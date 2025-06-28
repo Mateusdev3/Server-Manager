@@ -1,0 +1,133 @@
+﻿<Window x:Class="Server_Manager.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Banmanager" 
+        Height="505" Width="900"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        BorderBrush="Black"
+        MouseDown="Mouse">
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Assets\fundotelaban.png" />
+        </Grid.Background>
+
+        <!-- Botões fechar e minimizar -->
+        <Button Content="x" Width="50" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,10,0"
+                Background="Black" Foreground="White" Click="Fechar_Janela" />
+        <Button Content="-" Width="50" Height="24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,76,0"
+                Background="Black" Foreground="White" Click="Minimizar_Janela" />
+
+        <!-- Texto e fundo escuro central -->
+        <TextBlock Text="Banmanager" FontSize="29" FontWeight="Bold" Foreground="White"
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="50,50,0,0"
+                   FontStyle="Oblique" Background="Black" Width="800" TextAlignment="Center" 
+                   Height="40" Opacity="0.7" />
+        <Border Width="800" Height="405" VerticalAlignment="Center" Background="Black" Opacity="0.4"
+                Panel.ZIndex="-1" Margin="50,0,50,0" />
+
+        <!-- StackPanel com botão e caixa de pesquisa -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="222,89,222,0" Height="36" >
+            <!-- Botão com ContextMenu para seleção -->
+
+
+            <!-- Caixa de pesquisa -->
+
+            <TextBox x:Name="txtSearch"
+                     Width="300"
+                     Height="30"
+                     FontSize="16"
+                     FontWeight="Bold"
+                     Background="Black"
+                     Opacity="0.4"
+                     Foreground="White"
+                     BorderBrush="White"
+                     BorderThickness="1"
+                     TextChanged="txtSearch_TextChanged" />
+
+            <!-- Botão com ContextMenu para seleção -->
+            <Button x:Name="SearchTypeButton"
+                    Content="TIPO"
+                    Width="56"
+                    Height="30"
+                    FontSize="12"
+                    FontWeight="Bold"
+                    Background="Black"
+                    Foreground="White"
+                    Click="SearchTypeButton_Click">
+                <!-- Adição aqui! -->
+                <Button.ContextMenu>
+                    <ContextMenu x:Name="SearchContextMenu">
+                        <MenuItem Header="ID" Click="SearchType_Click" />
+                        <MenuItem Header="HWID" Click="SearchType_Click" />
+                        <MenuItem Header="CPUID" Click="SearchType_Click" />
+                        <MenuItem Header="GPUID" Click="SearchType_Click" />
+                        <MenuItem Header="RAMID" Click="SearchType_Click" />
+                        <MenuItem Header="BOARDID" Click="SearchType_Click" />
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
+            <!-- Botão Pesquisar -->
+            <Button Content="Pesquisar"
+                    Width="100"
+                    Height="30"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Background="Black"
+                    Foreground="White"
+                    Click="Pesquisar_Click" />
+        </StackPanel>
+        
+        <!-- DataGrid para exibir resultados -->
+        <DataGrid x:Name="DataGridResultados"
+          AutoGenerateColumns="True"
+          Background="Black"
+          Foreground="White"
+          RowBackground="Black" Opacity="0.5"
+          AlternatingRowBackground="Black"
+          GridLinesVisibility="Horizontal"
+          HeadersVisibility="Column"
+          BorderBrush="White"
+          FontSize="14"
+          FontWeight="SemiBold"
+          Height="300" Width="700"
+          Margin="100,150,100,55"
+          SelectionChanged="DataGridResultados_SelectionChanged">
+
+            <!-- Cabeçalhos escuros -->
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="FontSize" Value="11"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <!-- Linhas escuras + seleção personalizada -->
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="Black"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="FontSize" Value="11"/>
+                    <Setter Property="Height" Value="30"/>
+                    <Setter Property="BorderBrush" Value="White"/>
+
+                    <!-- Estilo para linha selecionada -->
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="#444"/>
+                            <!-- cinza escuro -->
+                            <Setter Property="Foreground" Value="White"/>
+                            <!-- texto branco -->
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+        </DataGrid>
+
+
+    </Grid>
+</Window>

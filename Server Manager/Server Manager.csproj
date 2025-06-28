@@ -14,11 +14,20 @@
     <None Remove="Assets\ban.png" />
     <None Remove="Assets\config.png" />
     <None Remove="Assets\fundo.png" />
+    <None Remove="Assets\fundotelaban.png" />
     <None Remove="Assets\lupa.png" />
+    <None Remove="players.db" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\icodev.ico" />
+    <Content Include="players.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +38,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\fundo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\fundotelaban.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\lupa.png">
