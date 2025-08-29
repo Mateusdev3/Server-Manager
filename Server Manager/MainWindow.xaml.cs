@@ -23,8 +23,20 @@ using System.Windows.Media.Animation;
 
 
 namespace Server_Manager {
-
+    
+    
     public partial class MainWindow : Window {
+
+        private static Mutex mutex;
+        protected override void OnSourceInitialized(EventArgs e) {
+            base.OnSourceInitialized(e);
+            mutex = new Mutex(true, "ServerManagerMutex", out bool createdNew);
+            if (!createdNew) {
+                MessageBox.Show("Já existe uma instância do Server Manager em execução.");
+                Application.Current.Shutdown();
+            }
+
+        }
 
         //Variáveis Globais
 
@@ -44,14 +56,32 @@ namespace Server_Manager {
         string port = string.Empty;
         string whitelistpath = string.Empty;
         string configdayzpath = string.Empty;
+        string dbpath = string.Empty;
+        
 
         public MainWindow() {
+         
             InitializeComponent();
-            VariaveisJson();
+
+            try
+            {
+                VariaveisJson();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Erro ao carregar configurações:\n" + ex.Message);
+                Application.Current.Shutdown(); // Encerra o app se não puder continuar
+                return;
+            }
+
             IniciarLoop();
+            IniciarLoopBec();
+
+
+
         }
 
-        public class Config {
+    public class Config {
 
             // Classe para mapear as variáveis do arquivo JSON de configuração
 
@@ -63,8 +93,11 @@ namespace Server_Manager {
             public string Becpath { get; set; } = string.Empty;
             public string Nomedayzprocess { get; set; } = string.Empty;
             public string Port { get; set; } = string.Empty;
-            public string whitelistpath { get; set; } = string.Empty;
-            public string configdayzpath { get; set; } = string.Empty;
+            public string Whitelistpath { get; set; } = string.Empty;
+            public string Configdayzpath { get; set; } = string.Empty;
+            public string Dbpath { get; set; } = string.Empty;
+            public string Dbsource { get; set; } = string.Empty;
+
         }
 
         public class PlayerInfo {
@@ -77,148 +110,16 @@ namespace Server_Manager {
             public string BOARDID { get; set; }
 
         }
-
-
-        // Classe para o servidor HTTP
-
         private async void Window_Loaded(object sender, RoutedEventArgs e) {
-            await Task.Run(() => ServerHttp.Httpserver(whitelistpath));
+          
         }
-
-        public class ServerHttp {
-            public static async Task Httpserver(string wlfile) {
-                HttpListener listener = new HttpListener();
-                listener.Prefixes.Add("http://localhost:5000/");
-                listener.Start();
-                Debug.WriteLine("Servidor HTTP iniciado. Aguardando requisições...");
-
-                while (true)
-                {
-                    var context = await listener.GetContextAsync();
-
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            string path = context.Request.Url.AbsolutePath;
-                            string method = context.Request.HttpMethod;
-                            context.Response.ContentType = "application/json";
-                            string resposta;
-
-                            // Whitelist management routes
-
-                            if (path.StartsWith("/add/") && method == "GET")
-                            {
-                                string id = path.Substring("/add/".Length);
-                                File.AppendAllLines(wlfile, new[] { id });
-                                resposta = JsonSerializer.Serialize(new { mensagem = $"Steam ID {id} adicionado com sucesso." });
-                            }
-                            else if (path.StartsWith("/remove/") && method == "GET")
-                            {
-                                string id = path.Substring("/remove/".Length);
-                                var linhas = File.ReadAllLines(wlfile).Where(l => l != id).ToList();
-                                File.WriteAllLines(wlfile, linhas);
-                                resposta = JsonSerializer.Serialize(new { mensagem = $"Steam ID {id} removido com sucesso." });
-                            }
-
-                            // Conecxão do banco de dados
-
-                            else if (path == "/status" && method == "POST")
-                            {
-                                using var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding);
-                                string json = await reader.ReadToEndAsync();
-
-                                if (string.IsNullOrWhiteSpace(json))
-                                    throw new Exception("JSON vazio");
-
-                                var player = JsonSerializer.Deserialize<PlayerInfo>(json);
-                                if (player == null || string.IsNullOrWhiteSpace(player.NICK))
-                                    throw new Exception("Dados do jogador inválidos ou NICK vazio.");
-
-                                string dbPath = @"C:\Projetos\Server Manager\Server Manager\players.db";
-                                using var conn = new SQLiteConnection($"Data Source={dbPath}");
-                                conn.Open();
-
-                                string checkSql = @"
-                            SELECT STATUS FROM Players 
-                            WHERE
-                              
-                                CPUID = @cpuid OR
-                                GPUID = @gpu OR 
-                                COMPUTERID = @comp OR
-                                BOARDID = @board
-                            LIMIT 1;";
-
-                                using var checkCmd = new SQLiteCommand(checkSql, conn);
-                                checkCmd.Parameters.AddWithValue("@hwid", player.HWID);
-                                checkCmd.Parameters.AddWithValue("@cpuid", player.CPUID);
-                                checkCmd.Parameters.AddWithValue("@gpu", player.GPUID);
-                                checkCmd.Parameters.AddWithValue("@ram", player.RAMID);
-                                checkCmd.Parameters.AddWithValue("@comp", player.COMPUTERID);
-                                checkCmd.Parameters.AddWithValue("@board", player.BOARDID);
-
-                                object result = checkCmd.ExecuteScalar();
-                                string status;
-
-                                if (result == null)
-                                {
-                                    Debug.WriteLine("Novo jogador. Inserindo...");
-                                    string insertSql = @"
-                                INSERT INTO Players (NICK, HWID, RAMID, COMPUTERID, CPUID, GPUID, BOARDID, STATUS) 
-                                VALUES (@nick, @hwid, @ramid, @compid, @cpuid, @gpuid, @boardid, 'ATIVO');";
-
-                                    using var insertCmd = new SQLiteCommand(insertSql, conn);
-                                    insertCmd.Parameters.AddWithValue("@nick", player.NICK);
-                                    insertCmd.Parameters.AddWithValue("@hwid", player.HWID);
-                                    insertCmd.Parameters.AddWithValue("@ramid", player.RAMID);
-                                    insertCmd.Parameters.AddWithValue("@compid", player.COMPUTERID);
-                                    insertCmd.Parameters.AddWithValue("@cpuid", player.CPUID);
-                                    insertCmd.Parameters.AddWithValue("@gpuid", player.GPUID);
-                                    insertCmd.Parameters.AddWithValue("@boardid", player.BOARDID);
-                                    insertCmd.ExecuteNonQuery();
-
-                                    status = "ATIVO";
-                                }
-                                else
-                                {
-                                    Debug.WriteLine("Jogador já existe. Status: " + result.ToString());
-                                    status = result.ToString().ToUpper();
-                                }
-
-                                resposta = JsonSerializer.Serialize(new { status = status });
-                            }
-                            else
-                            {
-                                context.Response.StatusCode = 404;
-                                resposta = JsonSerializer.Serialize(new { erro = "Rota não encontrada." });
-                            }
-
-                            byte[] buffer = Encoding.UTF8.GetBytes(resposta);
-                            context.Response.ContentLength64 = buffer.Length;
-                            await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                            context.Response.OutputStream.Close();
-                        }
-                        catch (Exception ex)
-                        {
-                            string erro = JsonSerializer.Serialize(new { erro = ex.Message });
-                            byte[] buffer = Encoding.UTF8.GetBytes(erro);
-                            context.Response.StatusCode = 500;
-                            context.Response.ContentLength64 = buffer.Length;
-                            await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
-                            context.Response.OutputStream.Close();
-                        }
-                    });
-                }
-            }
-        }
-
-        // Carrega as variáveis do arquivo JSON de configuração
+        
         public void VariaveisJson() {
             string json = File.ReadAllText("ManagerConfig.json");
             var dados = JsonSerializer.Deserialize<Config>(json);
             if (dados == null)
             {
-                MessageBox.Show("Erro ao carregar o arquivo de configuração. Verifique se o arquivo ManagerConfig.json existe e está formatado corretamente.");
+                MessageBox.Show("Erro ao carregar o arquivo de configuração.");
                 return;
             }
 
@@ -230,15 +131,46 @@ namespace Server_Manager {
             becpath = dados.Becpath;
             nomedayzprocess = dados.Nomedayzprocess;
             port = dados.Port;
-            whitelistpath = dados.whitelistpath;
-            configdayzpath = dados.configdayzpath;
+            whitelistpath = Path.GetFullPath(dados.Whitelistpath);
+            configdayzpath = dados.Configdayzpath;
+            dbpath = dados.Dbpath;
+            
+
+            Task.Run(() => ServerHttp.Httpserver(whitelistpath, dbpath));
         }
+
 
         private void IniciarLoop() {
             loopTimer = new DispatcherTimer();
-            loopTimer.Interval = TimeSpan.FromSeconds(2);
+            loopTimer.Interval = TimeSpan.FromSeconds(15);
             loopTimer.Tick += LoopTimer_Tick;
             loopTimer.Start();
+        }
+
+        private void IniciarLoopBec() {
+            DispatcherTimer becTimer;
+            becTimer = new DispatcherTimer();
+            becTimer.Interval = TimeSpan.FromMinutes(7);
+            becTimer.Tick += BecTimer_Tick;
+            becTimer.Start();
+
+        }
+
+        private void BecTimer_Tick(object sender, EventArgs e) {
+            if (Ch3.IsChecked == true)
+            {
+                if(!clickini || Ch5.IsChecked != true) return;
+                    if (CheckProcess(processbec))
+                {
+                    KillProces(processbec);
+                }
+                else
+                {
+                    string pathcomplete = Path.Combine(becpath, becname);
+                    string becargs = "-f Config.cfg --dsc";
+                    StartProcess(pathcomplete, becargs, true, becpath);
+                }
+            }
         }
 
         private async void LoopTimer_Tick(object sender, EventArgs e) {
@@ -248,9 +180,14 @@ namespace Server_Manager {
 
             if (!CheckProcess(nomedayzprocess))
             {
+                mods = (Ch2.IsChecked == true) ? ObterMods() : string.Empty;
                 string argumdayz = $"-config={dayzcfgname} -port={port} -profiles=profile";
+
                 if (!string.IsNullOrWhiteSpace(mods))
-                    argumdayz += $" -mod={mods}";
+                {
+                    argumdayz += $" \"-mod={mods}\"";
+                }
+
                 argumdayz += " -dologs -adminlog -netlog -freezecheck";
 
                 StartProcess(dayzexename, argumdayz, true, diretoriomain);
@@ -304,8 +241,6 @@ namespace Server_Manager {
             }
 
             argumdayz += " -dologs -adminlog -netlog -freezecheck";
-            MessageBox.Show($"Args usados:\n{argumdayz}");
-
             StartProcess(dayzexename, argumdayz, minimized, diretoriomain);
 
             if (Ch1.IsChecked == true)
@@ -424,6 +359,136 @@ namespace Server_Manager {
                 {
                     MessageBox.Show("Arquivo cfg do dayz não encontrado.");
                     return;
+                }
+            }
+        }
+        // Classe para o servidor HTTP
+
+       
+
+        public class ServerHttp {
+            public static async Task Httpserver(string whitelistpath, string dbpath) {
+                HttpListener listener = new HttpListener();
+                listener.Prefixes.Add("http://*:7453/");
+listener.Start();
+
+                Debug.WriteLine("Servidor HTTP iniciado. Aguardando requisições...");
+
+                while (true)
+                {
+                    var context = await listener.GetContextAsync();
+
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            string path = context.Request.Url.AbsolutePath;
+                            string method = context.Request.HttpMethod;
+                            context.Response.ContentType = "application/json";
+                            string resposta;
+
+                            // Whitelist management routes
+
+                            if (path.StartsWith("/add/") && method == "GET")
+                            {
+                                string id = path.Substring("/add/".Length);
+                                File.AppendAllLines(whitelistpath, new[] { id });
+                                resposta = JsonSerializer.Serialize(new { mensagem = $"Steam ID {id} adicionado com sucesso." });
+                            }
+                            else if (path.StartsWith("/remove/") && method == "GET")
+                            {
+                                string id = path.Substring("/remove/".Length);
+                                var linhas = File.ReadAllLines(whitelistpath).Where(l => l != id).ToList();
+                                File.WriteAllLines(whitelistpath, linhas);
+                                resposta = JsonSerializer.Serialize(new { mensagem = $"Steam ID {id} removido com sucesso." });
+                            }
+
+                            // Conecxão do banco de dados
+
+                            else if (path == "/status" && method == "POST")
+                            {
+                                using var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding);
+                                string json = await reader.ReadToEndAsync();
+
+                                if (string.IsNullOrWhiteSpace(json))
+                                    throw new Exception("JSON vazio");
+
+                                var player = JsonSerializer.Deserialize<PlayerInfo>(json);
+                                if (player == null || string.IsNullOrWhiteSpace(player.NICK))
+                                    throw new Exception("Dados do jogador inválidos ou NICK vazio.");
+
+                               
+                                using var conn = new SQLiteConnection($"Data Source={dbpath}");
+                                conn.Open();
+
+                                string checkSql = @"
+                            SELECT STATUS FROM Players 
+                            WHERE
+                                HWID = @hwid OR
+                                GPUID = @gpu OR 
+                                COMPUTERID = @comp OR
+                                BOARDID = @board
+                            LIMIT 1;";
+
+                                using var checkCmd = new SQLiteCommand(checkSql, conn);
+                                checkCmd.Parameters.AddWithValue("@hwid", player.HWID);
+                                checkCmd.Parameters.AddWithValue("@cpuid", player.CPUID);
+                                checkCmd.Parameters.AddWithValue("@gpu", player.GPUID);
+                                checkCmd.Parameters.AddWithValue("@ram", player.RAMID);
+                                checkCmd.Parameters.AddWithValue("@comp", player.COMPUTERID);
+                                checkCmd.Parameters.AddWithValue("@board", player.BOARDID);
+
+                                object result = checkCmd.ExecuteScalar();
+                                string status;
+
+                                if (result == null)
+                                {
+                                    Debug.WriteLine("Novo jogador. Inserindo...");
+                                    string insertSql = @"
+                                INSERT INTO Players (NICK, HWID, RAMID, COMPUTERID, CPUID, GPUID, BOARDID, STATUS) 
+                                VALUES (@nick, @hwid, @ramid, @compid, @cpuid, @gpuid, @boardid, 'ATIVO');";
+
+                                    using var insertCmd = new SQLiteCommand(insertSql, conn);
+                                    insertCmd.Parameters.AddWithValue("@nick", player.NICK);
+                                    insertCmd.Parameters.AddWithValue("@hwid", player.HWID);
+                                    insertCmd.Parameters.AddWithValue("@ramid", player.RAMID);
+                                    insertCmd.Parameters.AddWithValue("@compid", player.COMPUTERID);
+                                    insertCmd.Parameters.AddWithValue("@cpuid", player.CPUID);
+                                    insertCmd.Parameters.AddWithValue("@gpuid", player.GPUID);
+                                    insertCmd.Parameters.AddWithValue("@boardid", player.BOARDID);
+                                    insertCmd.ExecuteNonQuery();
+
+                                    status = "ATIVO";
+                                }
+                                else
+                                {
+                                    Debug.WriteLine("Jogador já existe. Status: " + result.ToString());
+                                    status = result.ToString().ToUpper();
+                                }
+
+                                resposta = JsonSerializer.Serialize(status);
+                            }
+                            else
+                            {
+                                context.Response.StatusCode = 404;
+                                resposta = JsonSerializer.Serialize(new { erro = "Rota não encontrada." });
+                            }
+
+                            byte[] buffer = Encoding.UTF8.GetBytes(resposta);
+                            context.Response.ContentLength64 = buffer.Length;
+                            await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                            context.Response.OutputStream.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            string erro = JsonSerializer.Serialize(new { erro = ex.Message });
+                            byte[] buffer = Encoding.UTF8.GetBytes(erro);
+                            context.Response.StatusCode = 500;
+                            context.Response.ContentLength64 = buffer.Length;
+                            await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                            context.Response.OutputStream.Close();
+                        }
+                    });
                 }
             }
         }

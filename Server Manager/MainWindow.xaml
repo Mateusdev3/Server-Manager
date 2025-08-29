@@ -68,7 +68,7 @@
 
             <CheckBox x:Name="Ch1" Content="Batlleye" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="65" Margin="10"/>
             <CheckBox x:Name="Ch2" Content="Mods" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="60" Margin="10" />
-            <CheckBox x:Name="Ch3" Content="Logs" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
+            <CheckBox x:Name="Ch3" Content="Rbec" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60" Margin="10"/>
             <CheckBox x:Name="Ch4" Content="Whitelist" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="70" Margin="10"/>
             <CheckBox x:Name="Ch5" Content="Recrash" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"  Width="80" Margin="10"/>
 

@@ -6,7 +6,8 @@
     "Processbec": "Bec",
     "Becpath": "D:\\Server Teste Pirata\\BEC",
     "Nomedayzprocess": "DayZServer_x64",
-    "Port": "2302",
-    "whitelistpath": "whitelist.txt",
-    "configdayzpath": "serverDZ.cfg"
+    "Port": "2332",
+    "Whitelistpath": "whitelist.txt",
+    "Configdayzpath": "serverDZ.cfg",
+    "Dbpath": "C:\\Projetos\\Server Manager\\Server Manager\\players.db"
 }

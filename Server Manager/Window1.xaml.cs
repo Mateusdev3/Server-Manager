@@ -20,9 +20,9 @@ namespace Server_Manager {
    
     public partial class Window1 : Window {
         private bool isOpen = true;
-        private const string dbPath = @"Data Source=C:\Projetos\Server Manager\Server Manager\players.db";
+        private const string dbPath = @"Data Source=C:\StormZ v1.28-Server\players.db";
         private string tipoSelecionado = "ID";
-
+        
         public Window1() {
 
             InitializeComponent();

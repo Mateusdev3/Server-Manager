@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\icodev.ico</ApplicationIcon>
+    <ApplicationManifest>C:\Projetos\Server Manager\app.manifest.txt</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

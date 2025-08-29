@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server Manager", "Server Ma
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Itens de Solução", "Itens de Solução", "{BD34E2BF-7FD9-499D-910E-111D277E3E34}"
 	ProjectSection(SolutionItems) = preProject
+		app.manifest.txt = app.manifest.txt
 		Player.cs = Player.cs
+		app.manifest.xml = app.manifest.xml
 	EndProjectSection
 EndProject
 Global
@@ -23,5 +25,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9B2565B7-7F4D-43A4-BE2A-190DE432EB10}
 	EndGlobalSection
 EndGlobal
